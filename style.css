@@ -12,6 +12,9 @@ body {
   min-height: 100vh;
   font-family: 'Courier New', monospace;
   color: #0f0;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #game-container {
@@ -22,7 +25,7 @@ body {
 }
 
 #hud {
-  width: 600px;
+  width: min(600px, 100vw);
   display: flex;
   justify-content: space-between;
   padding: 8px 4px;
@@ -41,6 +44,9 @@ body {
   background: #000;
   border: 2px solid #0f0;
   box-shadow: 0 0 20px #0f04, 0 0 40px #0f02;
+  max-width: 100%;
+  height: auto;
+  touch-action: none;
 }
 
 #overlay {
@@ -114,4 +120,32 @@ kbd {
 @keyframes pulse {
   0%, 100% { text-shadow: 0 0 10px #0f0; }
   50% { text-shadow: 0 0 30px #0f0, 0 0 60px #0f0; }
+}
+
+@media (max-width: 620px) {
+  #hud {
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 6px 8px;
+  }
+
+  #overlay h1 {
+    font-size: 26px;
+    letter-spacing: 3px;
+  }
+
+  #overlay p {
+    font-size: 12px;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  #overlay .result-msg {
+    font-size: 16px;
+  }
+
+  #start-btn {
+    font-size: 15px;
+    padding: 10px 28px;
+  }
 }
