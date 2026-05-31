@@ -148,6 +148,36 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('keyup', e => { keys[e.code] = false; });
 
+// Touch controls
+let touchLeft = false;
+let touchRight = false;
+
+function updateTouchState(e) {
+  touchLeft = false;
+  touchRight = false;
+  const rect = canvas.getBoundingClientRect();
+  for (const t of e.touches) {
+    const x = (t.clientX - rect.left) / rect.width * W;
+    if (x < W / 2) touchLeft = true;
+    else touchRight = true;
+  }
+}
+
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  updateTouchState(e);
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  updateTouchState(e);
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  updateTouchState(e);
+}, { passive: false });
+
 // ── Colisão retangular ────────────────────────────────────────────────────────
 function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
@@ -160,12 +190,13 @@ function update() {
   const s = state;
 
   // Mover jogador
-  if (keys['ArrowLeft'] && s.player.x > 0) s.player.x -= s.player.speed;
-  if (keys['ArrowRight'] && s.player.x + s.player.w < W) s.player.x += s.player.speed;
+  if ((keys['ArrowLeft'] || touchLeft) && s.player.x > 0) s.player.x -= s.player.speed;
+  if ((keys['ArrowRight'] || touchRight) && s.player.x + s.player.w < W) s.player.x += s.player.speed;
 
   // Atirar
   if (s.playerCooldown > 0) s.playerCooldown--;
-  if (keys['Space'] && s.playerCooldown === 0) {
+  const wantsShoot = keys['Space'] || touchLeft || touchRight;
+  if (wantsShoot && s.playerCooldown === 0) {
     s.bullets.push({ x: s.player.x + s.player.w / 2 - 2, y: s.player.y, w: 4, h: 12 });
     s.playerCooldown = 20;
   }
@@ -399,7 +430,7 @@ function showOverlay(title, btnText, subtitle) {
   }
 
   const p2 = document.createElement('p');
-  p2.innerHTML = 'Use <kbd>←</kbd> <kbd>→</kbd> para mover e <kbd>Espaço</kbd> para atirar';
+  p2.innerHTML = 'Toque na metade esquerda/direita da tela para mover · <kbd>←</kbd> <kbd>→</kbd> + <kbd>Espaço</kbd> no teclado';
   overlay.appendChild(p2);
 
   const btn = document.createElement('button');
